@@ -65,6 +65,7 @@ fn test_removed_tokens_are_rejected_when_other_allowed_tokens_remain() {
         &token,
         &String::from_str(&env, "removed_token_game"),
         &Platform::Lichess,
+    &None,
     );
     assert!(result.is_err(), "create_match should reject removed token");
 
@@ -75,6 +76,7 @@ fn test_removed_tokens_are_rejected_when_other_allowed_tokens_remain() {
         &token2_addr,
         &String::from_str(&env, "remaining_token_game"),
         &Platform::Lichess,
+    &None,
     );
     assert_eq!(id, 0, "remaining allowed token should still be accepted");
 }
@@ -97,6 +99,7 @@ fn test_removing_last_allowed_token_disables_allowlist_enforcement() {
         &unknown_token,
         &String::from_str(&env, "rollback_game"),
         &Platform::Lichess,
+    &None,
     );
     assert_eq!(id, 0, "create_match should accept any token after last allowed token is removed");
 }
@@ -139,6 +142,7 @@ fn test_remove_last_allowed_token_disables_allowlist() {
         &other_token,
         &String::from_str(&env, "allowlist_disabled_game"),
         &Platform::Lichess,
+    &None,
     );
     assert_eq!(id, 0, "create_match should accept new token once the allowlist is disabled");
 }
@@ -189,6 +193,7 @@ fn test_multiple_approved_tokens_can_coexist_after_allowlist_enforcement_is_enab
         &token,
         &String::from_str(&env, "game_token1"),
         &Platform::Lichess,
+    &None,
     );
     assert_eq!(id1, 0, "first match with token1 should succeed");
 
@@ -199,6 +204,7 @@ fn test_multiple_approved_tokens_can_coexist_after_allowlist_enforcement_is_enab
         &token2_addr,
         &String::from_str(&env, "game_token2"),
         &Platform::Lichess,
+    &None,
     );
     assert_eq!(id2, 1, "second match with token2 should succeed");
 
@@ -210,6 +216,7 @@ fn test_multiple_approved_tokens_can_coexist_after_allowlist_enforcement_is_enab
         &unknown_token,
         &String::from_str(&env, "game_unknown"),
         &Platform::Lichess,
+    &None,
     );
     assert!(
         result.is_err(),

@@ -15,6 +15,7 @@ mod events;
 mod index;
 mod invariants;
 mod lifecycle;
+mod new_features;
 mod pagination;
 mod security;
 mod snapshots;
@@ -87,6 +88,7 @@ pub fn setup_with_funded_match() -> (
         &token,
         &String::from_str(&env, "funded_fixture_game"),
         &Platform::Lichess,
+        &None,
     );
     client.deposit(&match_id, &player1);
     client.deposit(&match_id, &player2);

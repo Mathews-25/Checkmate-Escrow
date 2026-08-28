@@ -27,6 +27,7 @@ fn test_fuzz_stake_amounts() {
             &token,
             &String::from_str(&env, &format!("game123_{}", i)),
             &Platform::ChessDotCom,
+        &None,
         );
         assert!(result.is_ok(), "Failed for amount: {}", amount);
     }
@@ -54,6 +55,7 @@ fn test_fuzz_invalid_stake_amounts() {
             &token,
             &String::from_slice(&env, "game123"),
             &Platform::Lichess,
+        &None,
         );
         assert!(result.is_err(), "Should reject amount: {}", amount);
     }
@@ -77,6 +79,7 @@ fn test_fuzz_game_id_lengths() {
         &token,
         &game_id_1,
         &Platform::ChessDotCom,
+    &None,
     );
     assert!(result.is_ok(), "Should accept 1-byte game ID");
 
@@ -90,6 +93,7 @@ fn test_fuzz_game_id_lengths() {
         &token,
         &game_id_8,
         &Platform::Lichess,
+    &None,
     );
     assert!(result.is_ok(), "Should accept 8-byte game ID");
 
@@ -103,6 +107,7 @@ fn test_fuzz_game_id_lengths() {
         &token,
         &game_id_64,
         &Platform::Lichess,
+    &None,
     );
     assert!(result.is_ok(), "Should accept 64-byte game ID");
 }
@@ -123,6 +128,7 @@ fn test_fuzz_game_id_over_length() {
         &token,
         &game_id_65,
         &Platform::Lichess,
+    &None,
     );
     assert!(result.is_err(), "Should reject 65-byte game ID");
 }
@@ -142,6 +148,7 @@ fn test_fuzz_empty_game_id() {
         &token,
         &game_id_empty,
         &Platform::Lichess,
+    &None,
     );
     assert!(result.is_err(), "Should reject empty game ID");
 }
@@ -176,6 +183,7 @@ fn test_security_unauthorized_deposit() {
         &token,
         &String::from_slice(&env, "game123"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     // Player3 (not in the match) attempts to deposit
@@ -199,6 +207,7 @@ fn test_security_unauthorized_submit_result() {
         &token,
         &String::from_slice(&env, "game123"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     env.mock_all_auths();
@@ -228,6 +237,7 @@ fn test_security_double_deposit_attack() {
         &token,
         &String::from_slice(&env, "game123"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     // First deposit succeeds
@@ -257,6 +267,7 @@ fn test_security_cancel_completed_match_attack() {
         &token,
         &String::from_slice(&env, "game123"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     env.mock_all_auths();
@@ -288,6 +299,7 @@ fn test_security_cancel_active_match_attack() {
         &token,
         &String::from_slice(&env, "game123"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     // Both players deposit, activating the match
@@ -329,6 +341,7 @@ fn test_security_allowlist_bypass_attempt() {
         &token_addr_2,
         &String::from_slice(&env, "game123"),
         &Platform::ChessDotCom,
+    &None,
     );
     assert!(result.is_err(), "Should reject non-allowed token when allowlist enforced");
 }
@@ -354,6 +367,7 @@ fn test_security_create_match_when_paused() {
         &token,
         &String::from_slice(&env, "game123"),
         &Platform::ChessDotCom,
+    &None,
     );
     assert!(result.is_err(), "Should reject create_match when paused");
 }
@@ -372,6 +386,7 @@ fn test_security_deposit_when_paused() {
         &token,
         &String::from_slice(&env, "game123"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     // Pause the contract
@@ -398,6 +413,7 @@ fn test_security_submit_result_when_paused() {
         &token,
         &String::from_slice(&env, "game123"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     env.mock_all_auths();
@@ -430,6 +446,7 @@ fn test_security_same_player_attack() {
         &token,
         &String::from_slice(&env, "game123"),
         &Platform::ChessDotCom,
+    &None,
     );
     assert!(result.is_err(), "Should reject match with same player (InvalidPlayers)");
 }
@@ -448,6 +465,7 @@ fn test_security_contract_as_player_attack() {
         &token,
         &String::from_slice(&env, "game123"),
         &Platform::ChessDotCom,
+    &None,
     );
     assert!(result.is_err(), "Should reject contract as player (InvalidPlayers)");
 }
@@ -471,6 +489,7 @@ fn test_security_duplicate_game_id_attack() {
         &token,
         &game_id,
         &Platform::ChessDotCom,
+    &None,
     );
     assert!(result1.is_ok(), "First match should be created");
 
@@ -483,6 +502,7 @@ fn test_security_duplicate_game_id_attack() {
         &token,
         &game_id,
         &Platform::ChessDotCom,
+    &None,
     );
     assert!(result2.is_err(), "Should reject duplicate game_id (DuplicateGameId)");
 }
@@ -511,6 +531,7 @@ fn test_security_payout_overflow_prevention() {
         &token,
         &String::from_slice(&env, "game456"),
         &Platform::Lichess,
+    &None,
     );
 
     env.mock_all_auths();
@@ -539,6 +560,7 @@ fn test_security_cancel_only_pending_matches() {
         &token,
         &String::from_slice(&env, "game123"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     // Cancel pending match (should succeed)
@@ -563,6 +585,7 @@ fn test_security_oracle_record_stored() {
         &token,
         &String::from_slice(&env, "game123"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     env.mock_all_auths();

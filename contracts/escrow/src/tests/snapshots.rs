@@ -13,6 +13,7 @@ fn test_create_match_records_created_snapshot() {
         &token,
         &String::from_str(&env, "snap_created"),
         &Platform::Lichess,
+    &None,
     );
 
     let snaps = client.get_balance_snapshots(&admin, &id);
@@ -43,6 +44,7 @@ fn test_deposit_records_a_snapshot_per_deposit() {
         &token,
         &String::from_str(&env, "snap_deposit"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -76,6 +78,7 @@ fn test_submit_result_records_completed_snapshot_with_zero_balance() {
         &token,
         &String::from_str(&env, "snap_completed"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id, &player1);
     client.deposit(&id, &player2);
@@ -99,6 +102,7 @@ fn test_cancel_match_records_cancelled_snapshot_with_zero_balance() {
         &token,
         &String::from_str(&env, "snap_cancelled"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id, &player1);
     client.cancel_match(&id, &player1);
@@ -124,6 +128,7 @@ fn test_expire_match_records_cancelled_snapshot() {
         &token,
         &String::from_str(&env, "snap_expired"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id, &player1);
 
@@ -147,6 +152,7 @@ fn test_full_lifecycle_snapshot_sequence_is_chronological() {
         &token,
         &String::from_str(&env, "snap_sequence"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id, &player1);
     client.deposit(&id, &player2);
@@ -183,6 +189,7 @@ fn test_admin_sees_exact_amounts_in_snapshots() {
         &token,
         &String::from_str(&env, "snap_admin_view"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id, &player1);
 
@@ -203,6 +210,7 @@ fn test_player_sees_redacted_amounts_in_snapshots() {
         &token,
         &String::from_str(&env, "snap_player_view"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id, &player1);
 
@@ -239,6 +247,7 @@ fn test_unrelated_caller_cannot_query_snapshots() {
         &token,
         &String::from_str(&env, "snap_unauthorized"),
         &Platform::Lichess,
+    &None,
     );
 
     let result = client.try_get_balance_snapshots(&outsider, &id);
@@ -289,6 +298,7 @@ fn test_multi_token_matches_record_independent_symbols_and_amounts() {
         &token_a,
         &String::from_str(&env, "multi_token_a"),
         &Platform::Lichess,
+    &None,
     );
     let match_b = client.create_match(
         &player1,
@@ -297,6 +307,7 @@ fn test_multi_token_matches_record_independent_symbols_and_amounts() {
         &token_b,
         &String::from_str(&env, "multi_token_b"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     client.deposit(&match_a, &player1);
@@ -323,6 +334,7 @@ fn test_snapshot_ring_buffer_prunes_oldest_entries() {
         &token,
         &String::from_str(&env, "snap_pruning"),
         &Platform::Lichess,
+    &None,
     );
 
     // Drive far more snapshots than MAX_SNAPSHOTS_PER_MATCH by calling the
@@ -364,6 +376,7 @@ fn test_get_balance_snapshots_empty_for_match_with_no_recorded_history() {
         &token,
         &String::from_str(&env, "snap_wipe_history"),
         &Platform::Lichess,
+    &None,
     );
 
     env.as_contract(&contract_id, || {

@@ -43,6 +43,7 @@ pub fn create_default_match(
         token,
         &String::from_str(env, game_id),
         &Platform::Lichess,
+        &None,
     )
 }
 
@@ -63,6 +64,7 @@ pub fn create_match_with_stake(
         token,
         &String::from_str(env, game_id),
         &Platform::Lichess,
+        &None,
     )
 }
 

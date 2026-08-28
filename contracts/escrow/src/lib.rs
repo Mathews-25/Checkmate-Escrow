@@ -5,7 +5,10 @@ pub mod types;
 
 use errors::Error;
 use soroban_sdk::{contract, contractimpl, symbol_short, token, Address, Env, String, Symbol, Vec};
-use types::{BalanceSnapshot, DataKey, Match, MatchState, Platform, SnapshotReason, Winner};
+use types::{BalanceSnapshot, DataKey, Match, MatchState, Platform, ProtocolConfig, SnapshotReason, Winner};
+
+/// Semver string matching Cargo.toml `version = "0.1.0"`.
+const CONTRACT_VERSION: &str = "0.1.0";
 
 /// ~30 days at 5s/ledger. Used as the default TTL and expiration threshold.
 const MATCH_TTL_LEDGERS: u32 = 518_400;
@@ -275,6 +278,7 @@ impl EscrowContract {
         token: Address,
         game_id: String,
         platform: Platform,
+        referrer: Option<Address>,
     ) -> Result<u64, Error> {
         extend_instance_ttl(&env);
         player1.require_auth();
@@ -340,6 +344,7 @@ impl EscrowContract {
             player2_deposited: false,
             created_ledger: env.ledger().sequence(),
             completed_ledger: None,
+            referrer,
         };
 
         env.storage().persistent().set(&DataKey::Match(id), &m);
@@ -516,13 +521,64 @@ impl EscrowContract {
         let client = token::Client::new(&env, &m.token);
         let pot = m.stake_amount.checked_mul(2).ok_or(Error::Overflow)?;
 
+        // Compute protocol fee with optional cap (issue #1337).
+        let config: ProtocolConfig = env
+            .storage()
+            .instance()
+            .get(&DataKey::ProtocolConfig)
+            .unwrap_or(ProtocolConfig { fee_bps: 0, referral_share_bps: 0, max_protocol_fee: None });
+
+        let calculated_fee = pot
+            .checked_mul(config.fee_bps as i128)
+            .ok_or(Error::Overflow)?
+            / 10_000;
+        let protocol_fee = if let Some(cap) = config.max_protocol_fee {
+            calculated_fee.min(cap)
+        } else {
+            calculated_fee
+        };
+
+        // Distribute referral share from protocol fee (issue #1334).
+        let referral_fee = if m.referrer.is_some() && config.referral_share_bps > 0 {
+            protocol_fee
+                .checked_mul(config.referral_share_bps as i128)
+                .ok_or(Error::Overflow)?
+                / 10_000
+        } else {
+            0
+        };
+        let admin_fee = protocol_fee.saturating_sub(referral_fee);
+
+        let winner_payout = pot.saturating_sub(protocol_fee);
+
         match winner {
-            Winner::Player1 => client.transfer(&env.current_contract_address(), &m.player1, &pot),
-            Winner::Player2 => client.transfer(&env.current_contract_address(), &m.player2, &pot),
+            Winner::Player1 => client.transfer(&env.current_contract_address(), &m.player1, &winner_payout),
+            Winner::Player2 => client.transfer(&env.current_contract_address(), &m.player2, &winner_payout),
             Winner::Draw => {
-                client.transfer(&env.current_contract_address(), &m.player1, &m.stake_amount);
-                client.transfer(&env.current_contract_address(), &m.player2, &m.stake_amount);
+                // On draw split pot evenly, protocol fee is split between both shares.
+                let half_pot = m.stake_amount; // each player deposited stake_amount
+                let half_fee = protocol_fee / 2;
+                let each = half_pot.saturating_sub(half_fee);
+                client.transfer(&env.current_contract_address(), &m.player1, &each);
+                client.transfer(&env.current_contract_address(), &m.player2, &each);
             }
+        }
+
+        // Pay out referral fee (issue #1334).
+        if referral_fee > 0 {
+            if let Some(ref referrer) = m.referrer {
+                client.transfer(&env.current_contract_address(), referrer, &referral_fee);
+            }
+        }
+
+        // Collect remaining admin fee.
+        if admin_fee > 0 {
+            let admin: Address = env
+                .storage()
+                .instance()
+                .get(&DataKey::Admin)
+                .ok_or(Error::Unauthorized)?;
+            client.transfer(&env.current_contract_address(), &admin, &admin_fee);
         }
 
         Self::remove_active_match(&env, match_id);
@@ -1313,6 +1369,79 @@ impl EscrowContract {
     pub fn is_initialized(env: Env) -> bool {
         extend_instance_ttl(&env);
         env.storage().instance().has(&DataKey::Oracle)
+    }
+
+    /// Returns the contract version string (e.g. "0.1.0"). Issue #1336.
+    pub fn get_contract_version(env: Env) -> String {
+        String::from_str(&env, CONTRACT_VERSION)
+    }
+
+    /// Get the current protocol fee configuration. Issue #1337.
+    pub fn get_protocol_config(env: Env) -> ProtocolConfig {
+        env.storage()
+            .instance()
+            .get(&DataKey::ProtocolConfig)
+            .unwrap_or(ProtocolConfig { fee_bps: 0, referral_share_bps: 0, max_protocol_fee: None })
+    }
+
+    /// Set the protocol fee in basis points — admin only. Issue #1337.
+    pub fn set_protocol_fee_bps(env: Env, fee_bps: u32) -> Result<(), Error> {
+        let admin: Address = env
+            .storage()
+            .instance()
+            .get(&DataKey::Admin)
+            .ok_or(Error::Unauthorized)?;
+        admin.require_auth();
+        let mut config = Self::get_protocol_config(env.clone());
+        config.fee_bps = fee_bps;
+        env.storage().instance().set(&DataKey::ProtocolConfig, &config);
+        Ok(())
+    }
+
+    /// Set the referral share in basis points — admin only. Issue #1334.
+    pub fn set_referral_share_bps(env: Env, referral_share_bps: u32) -> Result<(), Error> {
+        let admin: Address = env
+            .storage()
+            .instance()
+            .get(&DataKey::Admin)
+            .ok_or(Error::Unauthorized)?;
+        admin.require_auth();
+        let mut config = Self::get_protocol_config(env.clone());
+        config.referral_share_bps = referral_share_bps;
+        env.storage().instance().set(&DataKey::ProtocolConfig, &config);
+        Ok(())
+    }
+
+    /// Set an absolute cap on the protocol fee per match — admin only. Issue #1337.
+    pub fn set_max_protocol_fee(env: Env, max_fee: Option<i128>) -> Result<(), Error> {
+        let admin: Address = env
+            .storage()
+            .instance()
+            .get(&DataKey::Admin)
+            .ok_or(Error::Unauthorized)?;
+        admin.require_auth();
+        let mut config = Self::get_protocol_config(env.clone());
+        config.max_protocol_fee = max_fee;
+        env.storage().instance().set(&DataKey::ProtocolConfig, &config);
+        Ok(())
+    }
+
+    /// Batch deposit into multiple matches in a single transaction. Issue #1335.
+    /// Returns a vector of result codes — `0` means success, non-zero is the `Error` code.
+    pub fn deposit_batch(
+        env: Env,
+        entries: soroban_sdk::Vec<(u64, Address)>,
+    ) -> soroban_sdk::Vec<u32> {
+        let mut results: soroban_sdk::Vec<u32> = soroban_sdk::vec![&env];
+        for entry in entries.iter() {
+            let (match_id, player) = entry;
+            let code = match Self::deposit(env.clone(), match_id, player) {
+                Ok(()) => 0u32,
+                Err(e) => e as u32,
+            };
+            results.push_back(code);
+        }
+        results
     }
 
 }

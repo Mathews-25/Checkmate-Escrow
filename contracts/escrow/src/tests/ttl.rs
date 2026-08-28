@@ -16,6 +16,7 @@ fn test_ttl_extended_on_create_match() {
         &token,
         &String::from_str(&env, "ttl_game1"),
         &Platform::Lichess,
+    &None,
     );
 
     let ttl = env.as_contract(&contract_id, || {
@@ -37,6 +38,7 @@ fn test_game_id_ttl_extended_on_match_reservation() {
         &token,
         &game_id,
         &Platform::Lichess,
+    &None,
     );
 
     let ttl = env.as_contract(&contract_id, || {
@@ -57,6 +59,7 @@ fn test_ttl_extended_on_deposit() {
         &token,
         &String::from_str(&env, "ttl_game2"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id, &player1);
 
@@ -78,6 +81,7 @@ fn test_active_matches_ttl_refreshed_on_append_and_removal() {
         &token,
         &String::from_str(&env, "ttl_active_append_remove_1"),
         &Platform::Lichess,
+    &None,
     );
 
     let _match2 = client.create_match(
@@ -87,6 +91,7 @@ fn test_active_matches_ttl_refreshed_on_append_and_removal() {
         &token,
         &String::from_str(&env, "ttl_active_append_remove_2"),
         &Platform::Lichess,
+    &None,
     );
 
     // Activate match1 so ActiveMatches key is written
@@ -130,6 +135,7 @@ fn test_active_matches_read_extends_ttl_after_ledger_advancement() {
         &token,
         &String::from_str(&env, "ttl_active_read"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id, &player1);
     client.deposit(&id, &player2);
@@ -158,6 +164,7 @@ fn test_ttl_extended_on_submit_result() {
         &token,
         &String::from_str(&env, "ttl_game3"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id, &player1);
     client.deposit(&id, &player2);
@@ -181,6 +188,7 @@ fn test_ttl_extended_on_cancel() {
         &token,
         &String::from_str(&env, "ttl_game4"),
         &Platform::Lichess,
+    &None,
     );
 
     env.ledger().set(soroban_sdk::testutils::LedgerInfo {
@@ -214,6 +222,7 @@ fn test_is_funded_extends_ttl() {
         &token,
         &String::from_str(&env, "ttl_is_funded"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id, &player1);
     client.deposit(&id, &player2);
@@ -249,6 +258,7 @@ fn test_ttl_extended_on_get_escrow_balance() {
         &token,
         &String::from_str(&env, "ttl_balance_game"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -281,6 +291,7 @@ fn test_get_match_extends_ttl_on_read() {
         &token,
         &String::from_str(&env, "ttl_read_test"),
         &Platform::Lichess,
+    &None,
     );
 
     client.get_match(&id);
@@ -303,6 +314,7 @@ fn test_get_match_resets_ttl_after_ledger_advance() {
         &token,
         &String::from_str(&env, "ttl_get_match"),
         &Platform::Lichess,
+    &None,
     );
 
     env.ledger().set(soroban_sdk::testutils::LedgerInfo {
@@ -336,6 +348,7 @@ fn test_player_match_index_ttl_refreshes_on_append() {
         &token,
         &String::from_str(&env, "ttl_index_append_1"),
         &Platform::Lichess,
+    &None,
     );
 
     env.ledger().set(soroban_sdk::testutils::LedgerInfo {
@@ -356,6 +369,7 @@ fn test_player_match_index_ttl_refreshes_on_append() {
         &token,
         &String::from_str(&env, "ttl_index_append_2"),
         &Platform::Lichess,
+    &None,
     );
 
     let ttl = env.as_contract(&contract_id, || {
@@ -378,6 +392,7 @@ fn test_player_match_index_ttl_refreshes_on_read() {
         &token,
         &String::from_str(&env, "ttl_index_read"),
         &Platform::Lichess,
+    &None,
     );
 
     env.ledger().set(soroban_sdk::testutils::LedgerInfo {
@@ -424,6 +439,7 @@ fn test_get_player_matches_ttl_returns_correct_value() {
         &token,
         &String::from_str(&env, "ttl_getter_test"),
         &Platform::Lichess,
+    &None,
     );
 
     let ttl_after = env.as_contract(&contract_id, || {

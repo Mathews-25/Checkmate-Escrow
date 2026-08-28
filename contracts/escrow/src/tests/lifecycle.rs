@@ -101,6 +101,7 @@ fn test_create_match() {
         &token,
         &String::from_str(&env, "abc123"),
         &Platform::Lichess,
+    &None,
     );
 
     assert_eq!(id, 0);
@@ -120,6 +121,7 @@ fn test_match_state_pending_immediately_after_create_match() {
         &token,
         &String::from_str(&env, "pending_state_test"),
         &Platform::Lichess,
+    &None,
     );
 
     let m = client.get_match(&id);
@@ -141,6 +143,7 @@ fn test_get_match_returns_stake_and_token() {
         &token,
         &String::from_str(&env, "game_266"),
         &Platform::Lichess,
+    &None,
     );
 
     let m = client.get_match(&id);
@@ -160,6 +163,7 @@ fn test_deposit_and_activate() {
         &token,
         &String::from_str(&env, "abc123"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -181,6 +185,7 @@ fn test_concurrent_deposits_same_ledger() {
         &token,
         &String::from_str(&env, "concurrent_deposits"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -203,6 +208,7 @@ fn test_is_funded_false_after_only_player1_deposits() {
         &token,
         &String::from_str(&env, "partial_funded_game"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -230,6 +236,7 @@ fn test_deposit_flags_set_correctly_after_each_deposit() {
         &token,
         &String::from_str(&env, "deposit_flags_test"),
         &Platform::Lichess,
+    &None,
     );
 
     let m = client.get_match(&id);
@@ -284,6 +291,7 @@ fn test_full_match_lifecycle_winner_and_draw_scenarios() {
         &token,
         &String::from_str(&env, "full_lifecycle_winner"),
         &Platform::Lichess,
+    &None,
     );
 
     let winner_match = client.get_match(&winner_match_id);
@@ -324,6 +332,7 @@ fn test_full_match_lifecycle_winner_and_draw_scenarios() {
         &token,
         &String::from_str(&env, "full_lifecycle_draw"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     let draw_match = client.get_match(&draw_match_id);
@@ -367,6 +376,7 @@ fn test_full_match_lifecycle() {
         &token,
         &String::from_str(&env, "lifecycle_game"),
         &Platform::Lichess,
+    &None,
     );
     assert_eq!(client.get_match(&id).state, MatchState::Pending);
     assert_eq!(client.get_escrow_balance(&id), 0);
@@ -401,6 +411,7 @@ fn test_payout_winner() {
         &token,
         &String::from_str(&env, "game1"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -425,6 +436,7 @@ fn test_draw_refund() {
         &token,
         &String::from_str(&env, "game2"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -448,6 +460,7 @@ fn test_player2_balance_decreases_after_deposit() {
         &token,
         &String::from_str(&env, "player2_balance_after_deposit"),
         &Platform::Lichess,
+    &None,
     );
 
     let balance_before = token_client.balance(&player2);
@@ -472,6 +485,7 @@ fn test_cancel_refunds_deposit() {
         &token,
         &String::from_str(&env, "game3"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -493,6 +507,7 @@ fn test_submit_result_fails_if_not_fully_funded() {
         &token,
         &String::from_str(&env, "game_nofund"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -520,6 +535,7 @@ fn test_submit_result_fails_when_contract_token_balance_is_zero() {
         &token,
         &String::from_str(&env, "zero_balance_game"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -553,6 +569,7 @@ fn test_player2_cancel_pending_match() {
         &token,
         &String::from_str(&env, "game_p2_cancel"),
         &Platform::Lichess,
+    &None,
     );
 
     client.cancel_match(&id, &player2);
@@ -572,6 +589,7 @@ fn test_player2_cancel_refunds_both_players() {
         &token,
         &String::from_str(&env, "game_p2_cancel_refund"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -594,6 +612,7 @@ fn test_player2_cancel_only_player2_deposited() {
         &token,
         &String::from_str(&env, "game_p2_only"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player2);
@@ -617,6 +636,7 @@ fn test_cancel_active_match_fails_with_invalid_state() {
         &token,
         &String::from_str(&env, "game_active_cancel"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -649,6 +669,7 @@ fn test_cancel_active_match_returns_match_already_active() {
         &token,
         &String::from_str(&env, "game_already_active"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -672,6 +693,7 @@ fn test_unauthorized_player_cannot_cancel() {
         &token,
         &String::from_str(&env, "game_unauthorized"),
         &Platform::Lichess,
+    &None,
     );
 
     let unauthorized = Address::generate(&env);
@@ -691,6 +713,7 @@ fn test_cancel_match_on_cancelled_match_returns_error() {
         &token,
         &String::from_str(&env, "cancel_cancelled_match"),
         &Platform::Lichess,
+    &None,
     );
 
     client.cancel_match(&id, &player1);
@@ -735,6 +758,7 @@ fn test_concurrent_matches_remain_isolated() {
         &token,
         &String::from_str(&env, "concurrent_match_one"),
         &Platform::Lichess,
+    &None,
     );
     let match_two = client.create_match(
         &player3,
@@ -743,6 +767,7 @@ fn test_concurrent_matches_remain_isolated() {
         &token,
         &String::from_str(&env, "concurrent_match_two"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     client.deposit(&match_one, &player1);
@@ -805,6 +830,7 @@ fn test_concurrent_matches_do_not_share_escrow_balances() {
         &token,
         &String::from_str(&env, "isolated_balance_match_a"),
         &Platform::Lichess,
+    &None,
     );
     let match_b = client.create_match(
         &player3,
@@ -813,6 +839,7 @@ fn test_concurrent_matches_do_not_share_escrow_balances() {
         &token,
         &String::from_str(&env, "isolated_balance_match_b"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     client.deposit(&match_a, &player1);
@@ -834,6 +861,7 @@ fn test_create_match_with_zero_stake_fails() {
         &token,
         &String::from_str(&env, "zero_stake_game"),
         &Platform::Lichess,
+    &None,
     );
 }
 
@@ -849,6 +877,7 @@ fn test_create_match_with_negative_stake_returns_invalid_amount() {
         &token,
         &String::from_str(&env, "negative_stake_game"),
         &Platform::Lichess,
+    &None,
     );
     assert_eq!(result, Err(Ok(Error::InvalidAmount)));
 }
@@ -865,6 +894,7 @@ fn test_create_match_with_empty_game_id_returns_invalid_game_id() {
         &token,
         &String::from_str(&env, ""),
         &Platform::Lichess,
+    &None,
     );
     assert_eq!(result, Err(Ok(Error::InvalidGameId)));
 }
@@ -884,6 +914,7 @@ fn test_match_count_increments_sequentially() {
             &token,
             &String::from_str(&env, game_id_str),
             &Platform::Lichess,
+        &None,
         );
         assert_eq!(id, expected_id as u64);
     }
@@ -906,6 +937,7 @@ fn test_escrow_balance_zero_after_draw() {
         &token,
         &String::from_str(&env, "draw_balance_game"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -929,6 +961,7 @@ fn test_get_escrow_balance_returns_stake_amount_after_player1_deposits() {
         &token,
         &String::from_str(&env, "escrow_balance_player1"),
         &Platform::Lichess,
+    &None,
     );
 
     assert_eq!(client.get_escrow_balance(&id), 0);
@@ -952,6 +985,7 @@ fn test_expire_match_refunds_depositor_after_timeout() {
         &token,
         &String::from_str(&env, "expire_game"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -1031,6 +1065,7 @@ fn test_expire_match_fails_before_timeout() {
         &token,
         &String::from_str(&env, "early_expire"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -1053,6 +1088,7 @@ fn test_get_match_returns_correct_players() {
         &token,
         &String::from_str(&env, "players_test"),
         &Platform::Lichess,
+    &None,
     );
 
     let m = client.get_match(&id);
@@ -1090,6 +1126,7 @@ fn test_is_funded_returns_false_when_only_player1_deposited() {
         &token,
         &String::from_str(&env, "funded_test"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -1121,6 +1158,7 @@ fn test_cancel_match_by_player2_refunds_player1_deposit() {
         &token,
         &String::from_str(&env, "cancel_test"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -1147,6 +1185,7 @@ fn test_cancel_match_by_unauthorized_address_returns_unauthorized() {
         &token,
         &String::from_str(&env, "unauthorized_cancel_test"),
         &Platform::Lichess,
+    &None,
     );
 
     let result = client.try_cancel_match(&id, &third_party);
@@ -1165,6 +1204,7 @@ fn test_get_match_returns_winner_after_payout() {
         &token,
         &String::from_str(&env, "winner_test"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id, &player1);
     client.deposit(&id, &player2);
@@ -1186,6 +1226,7 @@ fn test_submit_result_overflow_on_extreme_stake() {
         &token,
         &String::from_str(&env, "overflow_game"),
         &Platform::Lichess,
+    &None,
     );
 
     env.as_contract(&contract_id, || {
@@ -1231,6 +1272,7 @@ fn test_deposit_after_cancel_match_returns_invalid_state() {
         &token,
         &String::from_str(&env, "deposit_after_cancel"),
         &Platform::Lichess,
+    &None,
     );
 
     client.cancel_match(&id, &player1);
@@ -1252,6 +1294,7 @@ fn test_match_state_active_after_both_deposits() {
         &token,
         &String::from_str(&env, "active_state_test"),
         &Platform::Lichess,
+    &None,
     );
 
     let m = client.get_match(&id);
@@ -1278,6 +1321,7 @@ fn test_create_match_rejects_same_player_as_both_sides() {
         &token,
         &String::from_str(&env, "self_match"),
         &Platform::Lichess,
+    &None,
     );
     assert_eq!(result, Err(Ok(Error::InvalidPlayers)));
 }
@@ -1297,6 +1341,7 @@ fn test_get_match_returns_cancelled_after_expire_match() {
         &token,
         &String::from_str(&env, "expire_state_game"),
         &Platform::Lichess,
+    &None,
     );
 
     for addr in [&contract_id, &token] {
@@ -1357,6 +1402,7 @@ fn test_double_deposit() {
         &token,
         &String::from_str(&env, "double_deposit_test"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -1378,6 +1424,7 @@ fn test_is_funded_returns_true_after_payout() {
         &token,
         &String::from_str(&env, "is_funded_post_payout"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -1416,6 +1463,7 @@ fn test_get_escrow_balance_zero_for_completed_match() {
         &token,
         &String::from_str(&env, "balance_completed"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -1448,6 +1496,7 @@ fn test_get_escrow_balance_zero_for_cancelled_match_no_deposits() {
         &token,
         &String::from_str(&env, "balance_cancelled_no_deposit"),
         &Platform::Lichess,
+    &None,
     );
 
     assert_eq!(
@@ -1477,6 +1526,7 @@ fn test_get_escrow_balance_zero_after_cancel_with_player1_deposit() {
         &token,
         &String::from_str(&env, "balance_cancelled_after_player1_deposit"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -1511,6 +1561,7 @@ fn test_expire_match_refunds_both_players_when_both_deposited_but_still_pending(
         &token,
         &String::from_str(&env, "expire_both_deposited"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -1600,6 +1651,7 @@ fn test_created_ledger_is_set() {
         &token,
         &String::from_str(&env, "ledger_game"),
         &Platform::Lichess,
+    &None,
     );
 
     let m = client.get_match(&id);
@@ -1621,6 +1673,7 @@ fn test_create_match_with_chess_dot_com_platform() {
         &token,
         &String::from_str(&env, "chess_dot_com_game"),
         &Platform::ChessDotCom,
+    &None,
     );
 
     let m = client.get_match(&id);
@@ -1639,6 +1692,7 @@ fn test_winner_is_draw_default_before_result_submitted() {
         &token,
         &String::from_str(&env, "default_winner_test"),
         &Platform::Lichess,
+    &None,
     );
 
     let m = client.get_match(&id);
@@ -1661,6 +1715,7 @@ fn test_get_pending_matches_returns_newly_created_matches() {
         &token,
         &String::from_str(&env, "pending_game_1"),
         &Platform::Lichess,
+    &None,
     );
 
     let id2 = client.create_match(
@@ -1670,6 +1725,7 @@ fn test_get_pending_matches_returns_newly_created_matches() {
         &token,
         &String::from_str(&env, "pending_game_2"),
         &Platform::Lichess,
+    &None,
     );
 
     let pending = client.get_pending_matches();

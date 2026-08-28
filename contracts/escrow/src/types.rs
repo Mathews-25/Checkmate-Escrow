@@ -1,5 +1,18 @@
 use soroban_sdk::{contracttype, Address, String};
 
+/// Protocol-level fee configuration.
+#[contracttype]
+#[derive(Clone, Debug, PartialEq)]
+pub struct ProtocolConfig {
+    /// Fee share in basis points (e.g. 100 = 1%). Taken from the pot on payout.
+    pub fee_bps: u32,
+    /// Referral share in basis points, deducted from `fee_bps` portion.
+    pub referral_share_bps: u32,
+    /// Optional absolute cap on the protocol fee per match (in token units).
+    /// When set, `fee = min(calculated_fee, max_protocol_fee)`.
+    pub max_protocol_fee: Option<i128>,
+}
+
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum MatchState {
@@ -41,6 +54,8 @@ pub struct Match {
     pub created_ledger: u32,
     /// Ledger sequence number when match reached terminal state (Completed or Cancelled).
     pub completed_ledger: Option<u32>,
+    /// Optional referrer address for fee distribution.
+    pub referrer: Option<Address>,
 }
 
 #[contracttype]
@@ -60,6 +75,7 @@ pub enum DataKey {
     AllowlistEnforced,
     AllowedTokens,
     OracleRecord(u64),
+    ProtocolConfig,
     /// Balance snapshot for a match at a given ring-buffer slot.
     /// Slot = (snapshot index) % MAX_SNAPSHOTS_PER_MATCH — see lib.rs.
     Snapshot(u64, u32),

@@ -42,6 +42,7 @@ fn test_create_match_emits_event() {
         &token,
         &String::from_str(&env, "game_ev2"),
         &Platform::Lichess,
+    &None,
     );
 
     let events = env.events().all();
@@ -76,6 +77,7 @@ fn test_deposit_emits_event_for_partial_funding() {
         &token,
         &String::from_str(&env, "game_deposit_partial"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -111,6 +113,7 @@ fn test_deposit_emits_event_with_state_when_match_activates() {
         &token,
         &String::from_str(&env, "game_deposit_activate"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -148,6 +151,7 @@ fn test_submit_result_emits_event() {
         &token,
         &String::from_str(&env, "game_evt"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -182,6 +186,7 @@ fn test_cancel_match_emits_event() {
         &token,
         &String::from_str(&env, "game_cancel"),
         &Platform::Lichess,
+    &None,
     );
 
     client.cancel_match(&id, &player1);
@@ -214,6 +219,7 @@ fn test_cancel_match_no_deposits_emits_no_token_transfers() {
         &token,
         &String::from_str(&env, "game_no_deposit_cancel"),
         &Platform::Lichess,
+    &None,
     );
 
     client.cancel_match(&id, &player1);
@@ -290,6 +296,7 @@ fn test_submit_result_emits_completed_event_with_correct_winner() {
         &token,
         &String::from_str(&env, "event_test"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&match_id, &player1);
@@ -326,6 +333,7 @@ fn test_deposit_emits_event_for_player1() {
         &token,
         &String::from_str(&env, "deposit_p1_event"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&match_id, &player1);
@@ -361,6 +369,7 @@ fn test_deposit_emits_event_for_player2_and_includes_final_state() {
         &token,
         &String::from_str(&env, "deposit_p2_event"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&match_id, &player1);

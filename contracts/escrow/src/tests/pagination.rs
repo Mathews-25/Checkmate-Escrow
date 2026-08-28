@@ -16,6 +16,7 @@ fn test_player_match_pagination_handles_empty_and_partial_pages() {
             &token,
             &String::from_str(&env, &format!("game_{}", i)),
             &Platform::Lichess,
+        &None,
         );
         match_ids.push(match_id);
     }
@@ -72,6 +73,7 @@ fn test_player_match_pagination_zero_limit_and_offset_beyond_end() {
             &token,
             &String::from_str(&env, &format!("game_{}", i)),
             &Platform::Lichess,
+        &None,
         );
         match_ids.push(match_id);
     }
@@ -110,6 +112,7 @@ fn test_player_history_index_excludes_unrelated_matches() {
         &token,
         &String::from_str(&env, "game_1"),
         &Platform::Lichess,
+    &None,
     );
 
     let match_id_2 = client.create_match(
@@ -119,6 +122,7 @@ fn test_player_history_index_excludes_unrelated_matches() {
         &token,
         &String::from_str(&env, "game_2"),
         &Platform::Lichess,
+    &None,
     );
 
     // Create matches for player3 and player4
@@ -129,6 +133,7 @@ fn test_player_history_index_excludes_unrelated_matches() {
         &token,
         &String::from_str(&env, "game_3"),
         &Platform::Lichess,
+    &None,
     );
 
     let match_id_4 = client.create_match(
@@ -138,6 +143,7 @@ fn test_player_history_index_excludes_unrelated_matches() {
         &token,
         &String::from_str(&env, "game_4"),
         &Platform::Lichess,
+    &None,
     );
 
     // Assert player1 only receives their own match IDs
@@ -179,6 +185,7 @@ fn test_get_player_matches_preserves_insertion_order() {
         &token,
         &String::from_str(&env, "game_1"),
         &Platform::Lichess,
+    &None,
     );
 
     let match_id_2 = client.create_match(
@@ -188,6 +195,7 @@ fn test_get_player_matches_preserves_insertion_order() {
         &token,
         &String::from_str(&env, "game_2"),
         &Platform::Lichess,
+    &None,
     );
 
     let match_id_3 = client.create_match(
@@ -197,6 +205,7 @@ fn test_get_player_matches_preserves_insertion_order() {
         &token,
         &String::from_str(&env, "game_3"),
         &Platform::Lichess,
+    &None,
     );
 
     let match_id_4 = client.create_match(
@@ -206,6 +215,7 @@ fn test_get_player_matches_preserves_insertion_order() {
         &token,
         &String::from_str(&env, "game_4"),
         &Platform::Lichess,
+    &None,
     );
 
     // Assert returned IDs are in expected order
@@ -235,6 +245,7 @@ fn test_get_match_count_increments_correctly() {
         &token,
         &String::from_str(&env, "game_1"),
         &Platform::Lichess,
+    &None,
     );
     let count = client.get_match_count();
     assert_eq!(count, 1);
@@ -247,6 +258,7 @@ fn test_get_match_count_increments_correctly() {
         &token,
         &String::from_str(&env, "game_2"),
         &Platform::Lichess,
+    &None,
     );
     let count = client.get_match_count();
     assert_eq!(count, 2);
@@ -259,6 +271,7 @@ fn test_get_match_count_increments_correctly() {
         &token,
         &String::from_str(&env, "game_3"),
         &Platform::Lichess,
+    &None,
     );
     let count = client.get_match_count();
     assert_eq!(count, 3);
@@ -271,6 +284,7 @@ fn test_get_match_count_increments_correctly() {
         &token,
         &String::from_str(&env, "game_4"),
         &Platform::Lichess,
+    &None,
     );
     let count = client.get_match_count();
     assert_eq!(count, 4);

@@ -20,6 +20,7 @@ fn test_game_id_reservation_survives_ledger_advancement() {
         &token,
         &game_id,
         &Platform::Lichess,
+    &None,
     );
 
     // Advance ledgers
@@ -33,6 +34,7 @@ fn test_game_id_reservation_survives_ledger_advancement() {
         &token,
         &game_id,
         &Platform::Lichess,
+    &None,
     );
     assert_eq!(result, Err(Ok(Error::DuplicateGameId)));
 }
@@ -51,6 +53,7 @@ fn test_active_index_correct_after_concurrent_cancellations_and_completions() {
         &token,
         &String::from_str(&env, "game_1"),
         &Platform::Lichess,
+    &None,
     );
 
     let match_id_2 = client.create_match(
@@ -60,6 +63,7 @@ fn test_active_index_correct_after_concurrent_cancellations_and_completions() {
         &token,
         &String::from_str(&env, "game_2"),
         &Platform::Lichess,
+    &None,
     );
 
     let match_id_3 = client.create_match(
@@ -69,6 +73,7 @@ fn test_active_index_correct_after_concurrent_cancellations_and_completions() {
         &token,
         &String::from_str(&env, "game_3"),
         &Platform::Lichess,
+    &None,
     );
 
     // Activate matches 2 and 3; leave match 1 as Pending so it can be cancelled
@@ -102,6 +107,7 @@ fn test_active_index_ordering_stable_after_cancellation_gaps() {
         &token,
         &String::from_str(&env, "game_1"),
         &Platform::Lichess,
+    &None,
     );
 
     let match_id_2 = client.create_match(
@@ -111,6 +117,7 @@ fn test_active_index_ordering_stable_after_cancellation_gaps() {
         &token,
         &String::from_str(&env, "game_2"),
         &Platform::Lichess,
+    &None,
     );
 
     let match_id_3 = client.create_match(
@@ -120,6 +127,7 @@ fn test_active_index_ordering_stable_after_cancellation_gaps() {
         &token,
         &String::from_str(&env, "game_3"),
         &Platform::Lichess,
+    &None,
     );
 
     let match_id_4 = client.create_match(
@@ -129,6 +137,7 @@ fn test_active_index_ordering_stable_after_cancellation_gaps() {
         &token,
         &String::from_str(&env, "game_4"),
         &Platform::Lichess,
+    &None,
     );
 
     // Activate matches 1, 3, 4; leave match 2 as Pending so it can be cancelled
@@ -169,6 +178,7 @@ fn test_active_pagination_handles_empty_and_partial_pages() {
             &token,
             &String::from_str(&env, &format!("game_{}", i)),
             &Platform::Lichess,
+        &None,
         );
         match_ids.push(match_id);
     }
@@ -201,6 +211,7 @@ fn test_get_pending_matches_returns_only_pending_matches() {
         &token,
         &String::from_str(&env, "pending_match"),
         &Platform::Lichess,
+    &None,
     );
 
     let active_id = client.create_match(
@@ -210,6 +221,7 @@ fn test_get_pending_matches_returns_only_pending_matches() {
         &token,
         &String::from_str(&env, "active_match"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&active_id, &player1);
     client.deposit(&active_id, &player2);
@@ -235,6 +247,7 @@ fn test_match_transitions_from_pending_to_active_matches() {
         &token,
         &String::from_str(&env, "transition_match"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&match_id, &player1);

@@ -80,6 +80,7 @@ fn test_balance_conservation_after_cancel_with_one_deposit() {
         &token,
         &String::from_str(&env, "conservation_cancel_one"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&match_id, &player1);
 
@@ -114,6 +115,7 @@ fn test_balance_conservation_after_cancel_with_both_deposits() {
         &token,
         &String::from_str(&env, "conservation_cancel_both"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&match_id, &player1);
     client.deposit(&match_id, &player2);
@@ -160,6 +162,7 @@ fn test_escrow_balance_tracks_deposits_exactly() {
         &token,
         &String::from_str(&env, "balance_tracking_game"),
         &Platform::Lichess,
+    &None,
     );
 
     assert_eq!(client.get_escrow_balance(&match_id), 0);
@@ -242,6 +245,7 @@ fn test_cancelled_match_rejects_submit_result() {
         &token,
         &String::from_str(&env, "cancelled_submit_guard"),
         &Platform::Lichess,
+    &None,
     );
     client.cancel_match(&match_id, &player1);
     assert_eq!(client.get_match(&match_id).state, MatchState::Cancelled);
@@ -266,6 +270,7 @@ fn test_cancelled_match_rejects_deposit() {
         &token,
         &String::from_str(&env, "cancelled_deposit_guard"),
         &Platform::Lichess,
+    &None,
     );
     client.cancel_match(&match_id, &player1);
     assert_eq!(client.get_match(&match_id).state, MatchState::Cancelled);
@@ -291,6 +296,7 @@ fn test_cancelled_match_rejects_cancel() {
         &token,
         &String::from_str(&env, "double_cancel_guard"),
         &Platform::Lichess,
+    &None,
     );
     client.cancel_match(&match_id, &player1);
     assert_eq!(client.get_match(&match_id).state, MatchState::Cancelled);
@@ -325,6 +331,7 @@ fn test_escrow_balance_is_zero_in_all_terminal_states() {
         &token,
         &String::from_str(&env, "terminal_cancel_balance"),
         &Platform::Lichess,
+    &None,
     );
     client.cancel_match(&cancel_id, &player1);
     assert_eq!(

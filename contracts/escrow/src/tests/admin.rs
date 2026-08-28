@@ -26,6 +26,7 @@ fn test_admin_pause_blocks_create_match() {
         &token,
         &String::from_str(&env, "paused_game"),
         &Platform::Lichess,
+    &None,
     );
     assert_eq!(result, Err(Ok(Error::ContractPaused)));
 }
@@ -45,6 +46,7 @@ fn test_admin_unpause_allows_create_match() {
         &token,
         &String::from_str(&env, "unpaused_game"),
         &Platform::Lichess,
+    &None,
     );
     assert_eq!(id, 0);
 }
@@ -61,6 +63,7 @@ fn test_paused_contract_rejects_deposit() {
         &token,
         &String::from_str(&env, "game123"),
         &Platform::Lichess,
+    &None,
     );
 
     client.pause();
@@ -81,6 +84,7 @@ fn test_deposit_blocked_when_paused() {
         &token,
         &String::from_str(&env, "paused_deposit_game"),
         &Platform::Lichess,
+    &None,
     );
 
     client.pause();
@@ -105,6 +109,7 @@ fn test_deposit_by_unauthorized_address_returns_unauthorized() {
         &token,
         &String::from_str(&env, "unauth_deposit_game"),
         &Platform::Lichess,
+    &None,
     );
 
     let unauthorized_address = Address::generate(&env);
@@ -125,6 +130,7 @@ fn test_submit_result_blocked_when_paused() {
         &token,
         &String::from_str(&env, "paused_submit_game"),
         &Platform::Lichess,
+    &None,
     );
 
     client.deposit(&id, &player1);
@@ -185,6 +191,7 @@ fn test_old_oracle_rejected_after_rotation() {
         &token,
         &String::from_str(&env, "oracle_rotation"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id, &player1);
     client.deposit(&id, &player2);
@@ -231,6 +238,7 @@ fn test_non_oracle_unauthorized_even_when_paused() {
         &token,
         &String::from_str(&env, "paused_unauth"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id, &player1);
     client.deposit(&id, &player2);
@@ -274,6 +282,7 @@ fn test_update_oracle_routes_submit_result() {
         &token,
         &String::from_str(&env, "oracle_new_match"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id1, &player1);
     client.deposit(&id1, &player2);
@@ -302,6 +311,7 @@ fn test_update_oracle_routes_submit_result() {
         &token,
         &String::from_str(&env, "oracle_old_match"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id2, &player1);
     client.deposit(&id2, &player2);
@@ -334,6 +344,7 @@ fn test_submit_result_from_non_oracle_returns_unauthorized() {
         &token,
         &String::from_str(&env, "non_oracle_submit_game"),
         &Platform::Lichess,
+    &None,
     );
     client.deposit(&id, &player1);
     client.deposit(&id, &player2);
